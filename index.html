@@ -3,65 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kantine - Menüauswahl</title>
+    <title>Kantine - Menüauswahl & Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 30px 20px;
             background-color: #f4f7f6;
             display: flex;
             justify-content: center;
         }
+        .main-wrapper {
+            max-width: 950px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .nav-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .nav-btn {
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #333;
+        }
+        .nav-btn:hover { background: #e9ecef; }
+
         .container {
             display: flex;
-            max-width: 900px;
-            width: 100%;
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             gap: 30px;
         }
-        .form-section {
-            flex: 1;
+        @media(max-width: 768px) {
+            .container { flex-direction: column; }
         }
+        .form-section { flex: 1; }
         .info-section {
             width: 300px;
             background-color: #eef2f3;
-            padding: 15px;
-            border-radius: 6px;
+            padding: 20px;
+            border-radius: 8px;
             border-left: 5px solid #007bff;
         }
         h2, h3 { margin-top: 0; color: #333; }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #444; }
         input[type="text"], select {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 6px;
             box-sizing: border-box;
+            font-size: 15px;
         }
-        button {
+        button#submitBtn {
             background-color: #007bff;
             color: white;
             border: none;
             padding: 12px 20px;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
+            font-weight: 600;
             width: 100%;
         }
-        button:hover { background-color: #0056b3; }
+        button#submitBtn:hover { background-color: #0056b3; }
         
-        /* Modal-Fenster (Overlay) */
+        /* Modal-Fenster */
         .modal {
             display: none;
             position: fixed;
@@ -73,14 +92,14 @@
         .modal-content {
             background: white;
             padding: 30px;
-            border-radius: 8px;
+            border-radius: 10px;
             text-align: center;
             max-width: 400px;
             width: 100%;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         .order-number {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: bold;
             color: #28a745;
             margin: 15px 0;
@@ -88,44 +107,94 @@
         }
         .close-btn {
             background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            width: 100%;
         }
         .close-btn:hover { background-color: #5a6268; }
+
+        /* Admin Dashboard Styles */
+        .admin-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            display: none;
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-size: 14px; }
+        th { color: #555; background: #f8f9fa; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- Linker Bereich: Formular -->
-    <div class="form-section">
-        <h2>Kantine Essensbestellung</h2>
-        <form id="orderForm">
-            <div class="form-group">
-                <label for="matrikel">Matrikelnummer (6-stellig):</label>
-                <input type="text" id="matrikel" maxlength="6" placeholder="z.B. 123456" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="menu">Menü auswählen:</label>
-                <select id="menu" required>
-                    <option value="">-- Bitte wählen --</option>
-                    <option value="Menü 1">Menü 1</option>
-                    <option value="Menü 2">Menü 2</option>
-                    <option value="Menü 3">Menü 3</option>
-                </select>
-            </div>
-            
-            <button type="submit" id="submitBtn">Kostenpflichtig Bestellen</button>
-        </form>
+<div class="main-wrapper">
+    <div class="nav-bar">
+        <button class="nav-btn" onclick="switchView('order')">🍽️ Bestellformular</button>
+        <button class="nav-btn" onclick="switchView('admin')">📊 Kantinen-Dashboard (Personal)</button>
     </div>
 
-    <!-- Rechter Bereich: Infotext & Kosten -->
-    <div class="info-section">
-        <h3>Speiseplan & Preise</h3>
-        <p><strong>Menü 1:</strong><br>Klassisches Schnitzel mit Pommes und Beilagensalat.<br><em>Preis: 5,50 €</em></p>
-        <hr>
-        <p><strong>Menü 2:</strong><br>Vegetarisches Linsen-Curry mit Duftreis (Vegan).<br><em>Preis: 4,80 €</em></p>
-        <hr>
-        <p><strong>Menü 3:</strong><br>Großer Aktionsteller: Pasta Carbonara.<br><em>Preis: 5,20 €</em></p>
+    <!-- BESTELL-ANSICHT -->
+    <div class="container" id="orderViewContainer">
+        <div class="form-section">
+            <h2>Kantine Essensbestellung</h2>
+            <form id="orderForm">
+                <div class="form-group">
+                    <label for="matrikel">Matrikelnummer (6-stellig):</label>
+                    <input type="text" id="matrikel" maxlength="6" placeholder="z.B. 123456" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="menu">Menü auswählen:</label>
+                    <select id="menu" required>
+                        <option value="">-- Bitte wählen --</option>
+                        <option value="Menü 1">Menü 1</option>
+                        <option value="Menü 2">Menü 2</option>
+                        <option value="Menü 3">Menü 3</option>
+                    </select>
+                </div>
+                
+                <button type="submit" id="submitBtn">Kostenpflichtig Bestellen</button>
+            </form>
+        </div>
+
+        <div class="info-section">
+            <h3>Speiseplan & Preise</h3>
+            <p><strong>Menü 1:</strong><br>Klassisches Schnitzel mit Pommes.<br><em>5,50 €</em></p>
+            <hr>
+            <p><strong>Menü 2:</strong><br>Linsen-Curry mit Reis (Vegan).<br><em>4,80 €</em></p>
+            <hr>
+            <p><strong>Menü 3:</strong><br>Pasta Carbonara.<br><em>5,20 €</em></p>
+        </div>
+    </div>
+
+    <!-- ADMIN-DASHBOARD ANSICHT -->
+    <div class="admin-card" id="adminViewContainer">
+        <h2>Live-Bestellübersicht für das Personal</h2>
+        <p>Hier siehst du alle offenen Bestellungen und kannst den Bearbeitungsstatus anpassen.</p>
+        <button class="nav-btn" onclick="loadAdminOrders()" style="margin-bottom: 10px;">🔄 Liste aktualisieren</button>
+        <div id="adminStats" style="font-weight: 600; color: #555; margin-bottom: 10px;"></div>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bestell-Nr.</th>
+                        <th>Matrikel</th>
+                        <th>Menü</th>
+                        <th>Zeit</th>
+                        <th>Status</th>
+                        <th>Aktion ändern</th>
+                    </tr>
+                </thead>
+                <tbody id="adminTableBody">
+                    <tr><td colspan="6" style="text-align: center; color: #777;">Lade Daten...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -141,9 +210,21 @@
 </div>
 
 <script>
-    // ⚠️ HIER DEINE KOPIERTE GOOGLE WEB-APP-URL EINTRAGEN (endet auf /exec)
+    // ⚠️ HIER DEINE GOOGLE WEB-APP-URL EINTRAGEN
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwJ-zB01JPlTeLNenfIe4aEHrlcSu2Pgy858ZBMv3N-NBSA7rqUDFNSUf0xAwpvO8wqwQ/exec";
 
+    function switchView(view) {
+        if(view === 'order') {
+            document.getElementById('orderViewContainer').style.display = 'flex';
+            document.getElementById('adminViewContainer').style.display = 'none';
+        } else {
+            document.getElementById('orderViewContainer').style.display = 'none';
+            document.getElementById('adminViewContainer').style.display = 'block';
+            loadAdminOrders();
+        }
+    }
+
+    // Dein originaler Event-Listener (voll funktionsfähig beibehalten)
     document.getElementById('orderForm').addEventListener('submit', function(e) {
         e.preventDefault(); 
         
@@ -151,19 +232,16 @@
         const menuSelect = document.getElementById('menu').value;
         const submitBtn = document.getElementById('submitBtn');
 
-        // 1. Validierung: Genau 6 Ziffern?
         if (matrikelInput.length !== 6 || isNaN(matrikelInput)) {
             alert("Fehler: Die Matrikelnummer muss exakt 6 Ziffern lang sein.");
             return;
         }
 
-        // 2. Validierung: Menü ausgewählt?
         if (menuSelect === "") {
             alert("Fehler: Bitte wähle ein Menü aus.");
             return;
         }
 
-        // Button sperren während der Übertragung
         submitBtn.disabled = true;
         const originalText = submitBtn.innerText;
         submitBtn.innerText = "Wird verarbeitet...";
@@ -173,7 +251,6 @@
             menue: menuSelect
         };
 
-        // Daten an Google Sheets senden
         fetch(WEB_APP_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain' },
@@ -188,7 +265,6 @@
             submitBtn.innerText = originalText;
 
             if (res.status === "success") {
-                // Nummer anzeigen und Modal öffnen
                 document.getElementById('displayOrderNumber').innerText = "#" + res.orderId;
                 document.getElementById('successModal').style.display = 'flex';
             } else {
@@ -206,6 +282,76 @@
     function closeModal() {
         document.getElementById('successModal').style.display = 'none';
         document.getElementById('orderForm').reset();
+    }
+
+    // Funktionen für das Admin-Dashboard (Zusatz)
+    function loadAdminOrders() {
+        fetch(WEB_APP_URL)
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === "success") {
+                renderTable(data.orders);
+            }
+        })
+        .catch(err => console.error("Fehler beim Laden:", err));
+    }
+
+    function renderTable(orders) {
+        const tbody = document.getElementById('adminTableBody');
+        tbody.innerHTML = "";
+
+        if(orders.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #777;">Keine aktiven Bestellungen vorhanden.</td></tr>`;
+            document.getElementById('adminStats').innerText = "Gesamt: 0 Bestellungen";
+            return;
+        }
+
+        let counts = { "Menü 1": 0, "Menü 2": 0, "Menü 3": 0 };
+
+        orders.forEach(order => {
+            if(counts[order.menue] !== undefined) counts[order.menue]++;
+
+            let tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="font-weight: bold;">#${order.orderId}</td>
+                <td>${order.matrikel}</td>
+                <td>${order.menue}</td>
+                <td style="color: #666;">${order.timestamp}</td>
+                <td><span style="padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; background: ${order.status === 'Erledigt' ? '#d4edda; color: #155724;' : (order.status === 'In Bearbeitung' ? '#cce5ff; color: #004085;' : '#fff3cd; color: #856404;')};">${order.status}</span></td>
+                <td>
+                    <select onchange="updateOrderStatus(${order.row}, this.value)" style="padding: 6px;">
+                        <option value="Offen" ${order.status === 'Offen' ? 'selected' : ''}>Offen</option>
+                        <option value="In Bearbeitung" ${order.status === 'In Bearbeitung' ? 'selected' : ''}>In Bearbeitung</option>
+                        <option value="Erledigt" ${order.status === 'Erledigt' ? 'selected' : ''}>Erledigt</option>
+                    </select>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('adminStats').innerText = `Statistik: Menü 1 (${counts['Menü 1']}) | Menü 2 (${counts['Menü 2']}) | Menü 3 (${counts['Menü 3']}) — Gesamt: ${orders.length}`;
+    }
+
+    function updateOrderStatus(rowNumber, newStatus) {
+        const payload = {
+            action: "updateStatus",
+            row: rowNumber,
+            status: newStatus
+        };
+
+        fetch(WEB_APP_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === "success") {
+                loadAdminOrders();
+            } else {
+                alert("Status konnte nicht aktualisiert werden.");
+            }
+        });
     }
 </script>
 
